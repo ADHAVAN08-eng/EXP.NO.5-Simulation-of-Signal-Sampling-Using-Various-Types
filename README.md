@@ -1,4 +1,3 @@
-![image](https://github.com/user-attachments/assets/e8a003f0-a32a-497d-b61a-87bc8c7d33eb)![image](https://github.com/user-attachments/assets/0c3a2896-a268-4013-9428-aed838838a7d)![image](https://github.com/user-attachments/assets/a05f6c64-a0c9-4acf-8457-7f2525f4a735)# EXP.NO.5-Simulation-of-Signal-Sampling-Using-Various-Types
 5.Simulation of Signal Sampling Using Various Types such as
     i) Ideal Sampling
     ii) Natural Sampling
@@ -76,30 +75,18 @@ plt.show()
 import matplotlib.pyplot as plt
 from scipy.signal import butter, lfilter
 
-# Parameters
+
 fs = 1000  # Sampling frequency (samples per second)
 T = 1  # Duration in seconds
 t = np.arange(0, T, 1 / fs)  # Time vector
-
-# Message Signal (sine wave message)
 fm = 5  # Frequency of message signal (Hz)
 message_signal = np.sin(2 * np.pi * fm * t)
-
-# Pulse Train Parameters
 pulse_rate = 50  # pulses per second
 pulse_train = np.zeros_like(t)
-
-# Construct Pulse Train (rectangular pulses)
 pulse_width = int(fs / pulse_rate / 2)
 for i in range(0, len(t), int(fs / pulse_rate)):
     pulse_train[i:min(i + pulse_width, len(t))] = 1  # Corrected pulse width handling
-
-# Natural Sampling
 nat_signal = message_signal * pulse_train
-
-# Reconstruction (Demodulation) Process
-
-# Low-pass Filter (optional, smoother reconstruction)
 def lowpass_filter(signal, cutoff, fs, order=5):
     nyquist = 0.5 * fs
     normal_cutoff = cutoff / nyquist
@@ -109,26 +96,18 @@ def lowpass_filter(signal, cutoff, fs, order=5):
 reconstructed_signal = lowpass_filter(nat_signal, 10, fs) # apply low pass filter to the naturally sampled signal.
 
 plt.figure(figsize=(14, 10))
-
-# Original Message Signal
 plt.subplot(4, 1, 1)
 plt.plot(t, message_signal, label='Original Message Signal')
 plt.legend()
 plt.grid(True)
-
-# Pulse Train
 plt.subplot(4, 1, 2)
 plt.plot(t, pulse_train, label='Pulse Train')
 plt.legend()
 plt.grid(True)
-
-# Natural Sampling
 plt.subplot(4, 1, 3)
 plt.plot(t, nat_signal, label='Natural Sampling')
 plt.legend()
 plt.grid(True)
-
-# Reconstructed Signal
 plt.subplot(4, 1, 4)
 plt.plot(t, reconstructed_signal, label='Reconstructed Message Signal', color='green')
 plt.legend()
@@ -146,41 +125,25 @@ plt.show()
  import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import butter, lfilter
-
-# Parameters
 fs = 1000  # Sampling frequency (samples per second)
 T = 1  # Duration in seconds
 t = np.arange(0, T, 1/fs)  # Time vector
-
-# Message Signal (sine wave)
 fm = 5  # Frequency of message signal (Hz)
 message_signal = np.sin(2 * np.pi * fm * t)
-
-# Pulse Train Parameters
 pulse_rate = 50  # pulses per second
 pulse_train = np.zeros_like(t)
 pulse_width = int(fs / pulse_rate / 4)  # Flat-top width
-
-# Construct Pulse Train (rectangular pulses for flat-top sampling)
 for i in range(0, len(t), int(fs / pulse_rate)):
     pulse_train[i:i+pulse_width] = 1
-
-# Flat-Top Sampling
 flat_top_signal = np.copy(message_signal)
 for i in range(0, len(t), int(fs / pulse_rate)):
     flat_top_signal[i:i+pulse_width] = message_signal[i]  # Hold value constant
-
-# Reconstruction (Demodulation) Process
 sampled_signal = flat_top_signal[pulse_train == 1]
 sample_times = t[pulse_train == 1]
-
-# Interpolation - Zero-Order Hold (for visualization)
 reconstructed_signal = np.zeros_like(t)
 for i, time in enumerate(sample_times):
     index = np.argmin(np.abs(t - time))
     reconstructed_signal[index:index+pulse_width] = sampled_signal[i]
-
-# Low-pass Filter for smoother reconstruction
 def lowpass_filter(signal, cutoff, fs, order=5):
     nyquist = 0.5 * fs
     normal_cutoff = cutoff / nyquist
@@ -188,29 +151,19 @@ def lowpass_filter(signal, cutoff, fs, order=5):
     return lfilter(b, a, signal)
 
 reconstructed_signal = lowpass_filter(reconstructed_signal, 10, fs)
-
-# Visualization
 plt.figure(figsize=(14, 10))
-
-# Original Message Signal
 plt.subplot(4, 1, 1)
 plt.plot(t, message_signal, label='Original Message Signal')
 plt.legend()
 plt.grid(True)
-
-# Pulse Train
 plt.subplot(4, 1, 2)
 plt.plot(t, pulse_train, label='Pulse Train')
 plt.legend()
 plt.grid(True)
-
-# Flat-Top Sampling
 plt.subplot(4, 1, 3)
 plt.plot(t, flat_top_signal, label='Flat-Top Sampled Signal')
 plt.legend()
 plt.grid(True)
-
-# Reconstructed Signal
 plt.subplot(4, 1, 4)
 plt.plot(t, reconstructed_signal, label='Reconstructed Signal', color='green')
 plt.legend()
